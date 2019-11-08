@@ -234,12 +234,12 @@ const generateHTML2 = function(res) {
     
 
 
-// module.exports = generateHTML(data);
+
 module.exports = {
   colors: colors,
   generateHTML1: generateHTML1,
   generateHTML2: generateHTML2,
 }
 
-// console.log(generateHTML);
+
 
