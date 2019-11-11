@@ -3,7 +3,7 @@ const colors = {
       wrapperBackground: "#E6E1C3",
       headerBackground: "#C1C72C",
       headerColor: "black",
-      photoBorderColor: "#black"
+      photoBorderColor: "black"
     },
     blue: {
       wrapperBackground: "#5F64D3",
@@ -25,7 +25,7 @@ const colors = {
     }
   };
   
-var generateHTML1 =  function(data) {
+var generateHTML1 =  function(data, res, response) {
       return `<!DOCTYPE html>
     <html lang="en">
        <head>
@@ -170,12 +170,9 @@ var generateHTML1 =  function(data) {
             zoom: .75; 
           } 
          }
-      </style>`
-        }      
+      </style>     
 
-
-const generateHTML2 = function(res) {
-          return `</head>
+          </head>
           <body>
              <div class="wrapper">
                 <div class="photo-header">
@@ -215,7 +212,7 @@ const generateHTML2 = function(res) {
                       <div class="col">
                       <div class="card">
                          <h3>GitHub Stars</h3>
-                         <h4>0</h4>
+                         <h4>${response}</h4>
                          </div>
                       </div>
                        <div class="col">
@@ -238,7 +235,6 @@ const generateHTML2 = function(res) {
 module.exports = {
   colors: colors,
   generateHTML1: generateHTML1,
-  generateHTML2: generateHTML2,
 }
 
 

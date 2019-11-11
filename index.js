@@ -1,4 +1,5 @@
 const fs = require("fs");
+var pdf = require('html-pdf');
 const axios = require("axios");
 const electron = require("electron");
 // const BrowserWindow = electron.remote.BrowserWindow;
@@ -9,11 +10,11 @@ const colors = html.colors;
 
 
 const writeFileAsync = util.promisify(fs.writeFile);
-const appendFileAsync = util.promisify(fs.appendFile);
+// const readFileAsync = util.promisify(fs.readFile);
 
-function  promptUser() {
+function promptUser() {
 
-return inquirer.prompt([
+  return inquirer.prompt([
     {
       type: "input",
       name: "username",
@@ -24,71 +25,67 @@ return inquirer.prompt([
       message: "what is your favorite color?",
       name: "color",
       choices: [
-        "green", 
-        "blue", 
-        "pink", 
+        "green",
+        "blue",
+        "pink",
         "red",
       ]
     },
   ])
-  
+
 }
+
+
+function getUserAccount(data) {
+  return axios.get(`https://api.github.com/users/${data.username}?client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&per_page=100`);
+}
+
+function getUserPermissions(data) {
+  var starz = 0;
+  return axios.get(`https://api.github.com/users/${data.username}/repos?client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&per_page=20`)
+    .then(function (req) {
+      for (let i = 0; i < req.data.length; i++) {
+        var starCount = req.data[i].stargazers_count;
+        starz += starCount;
+      }
+      return starz;
+    });
+};
 
 
 async function init() {
-    console.log("hi");
-    try {
-        const data = await promptUser();
-console.log(data);
-console.log(data.username);
-        const res = await  axios.get("https://api.github.com/users/" + data.username);
-        // console.log(res);
-        console.log(colors[data.color]);
-        const htmlGen1 = html.generateHTML1(data)
+  console.log("hi");
+  try {
+    const data = await promptUser();
 
-        await writeFileAsync("profile.html", htmlGen1);
 
-        const htmlGen2 = html.generateHTML2(res);
+    axios.all([getUserAccount(data), getUserPermissions(data)])
+      .then(axios.spread(function (res, response) {
+        const htmlGen1 = html.generateHTML1(data, res, response);
 
-        await appendFileAsync("profile.html",htmlGen2);
-        console.log("Success");
-  
-        // createPDF();
-  
-    } catch(err) {
-        console.log(err);
-    }
+        writeFileAsync("profile.html", htmlGen1);
+        // Both requests are now complete
+
+      }))
+    createPDF();
+
+    console.log("Success");
+
+  } catch (err) {
+    console.log(err);
+  }
 }
 
-     
+
+function createPDF() {
+  setTimeout(function () {
+    var html = fs.readFileSync('./profile.html', 'utf8');
+    var options = { format: 'Letter' };
+    pdf.create(html, options).toFile('./profile.pdf', function (err, res) {
+      if (err) return console.log(err);
+      console.log(res);
+    })
+  }, 2000);
+}
 
 init();
-
-// function createPDF() {
-
-// const window_to_PDF = new BrowserWindow({show : false});//to just open the browser in background
-// window_to_PDF.loadURL('profile.html'); //give the file link you want to display
-// function pdfSettings() {
-//     var paperSizeArray = ["A4", "A5"];
-//     var option = {
-//         landscape: false,
-//         marginsType: 0,
-//         printBackground: false,
-//         printSelectionOnly: false,
-//         pageSize: paperSizeArray[settingCache.getPrintPaperSize()-1],
-//     };
-//   return option;
-// }
-// window_to_PDF.webContents.printToPDF(pdfSettings(), function(err, data) {
-//     if (err) {
-//         //do whatever you want
-//         return;
-//     }
-//     try{
-//         fs.writeFileSync('./generated_pdf.pdf', data);
-//     }catch(err){
-//         //unable to save pdf..
-//     }
-   
-// })
-// }
