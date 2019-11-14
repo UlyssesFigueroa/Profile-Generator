@@ -57,6 +57,7 @@ async function init() {
   console.log("hi");
   try {
     const data = await promptUser();
+    
 
 
     axios.all([getUserAccount(data), getUserPermissions(data)])

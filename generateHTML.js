@@ -183,7 +183,7 @@ var generateHTML1 =  function(data, res, response) {
                    <h5></h5>
                    <nav class="links-nav">
                       <a class="nav-link" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/place/${res.data.location}"><i class="fas fa-location-arrow"></i> ${res.data.location}</a>
-                      <a class="nav-link" target="_blank" rel="noopener noreferrer" href="${res.data.url}"><i class="fab fa-github-alt"></i> GitHub</a>
+                      <a class="nav-link" target="_blank" rel="noopener noreferrer" href="${res.data.html_url}"><i class="fab fa-github-alt"></i> GitHub</a>
                       
                    </nav>
                 </div>
